@@ -2,12 +2,12 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from controller.controllerCarro import *
 
 
-#Para subir archivo tipo foto al servidor
+#Para subir archivo tipo foto a nuestra aplicacion web
 import os
 from werkzeug.utils import secure_filename 
 
 
-#Declarando nombre de la aplicación e inicializando, crear la aplicación Flask
+#Declarando nombre de la aplicación y esto nos funciona para que nosotros la podamos subir 
 app = Flask(__name__)
 application = app
 
@@ -15,20 +15,20 @@ msg  =''
 tipo =''
 
 
-#Creando mi decorador para el home, el cual retornara la Lista de Carros
+#Creando mi decorador para el home, el cual retornara la lista de las cosas (se dice carros por el tutorial seguidos para realizarlo)
 @app.route('/', methods=['GET','POST'])
 def inicio():
     return render_template('public/layout.html', miData = listaCarros())
 
 
-#RUTAS
+# declarando rutas de nuestro sistema 
 @app.route('/registrar-carro', methods=['GET','POST'])
 def addCarro():
     return render_template('public/acciones/add.html')
 
 
  
-#Registrando nuevo carro
+# registrar una nueva vacante siguiendo las bases de un carro 
 @app.route('/carro', methods=['POST'])
 def formAddCarro():
     if request.method == 'POST':
@@ -89,7 +89,7 @@ def  formActualizarCarro(idCarro):
         puertas         = request.form['puertas']
         favorito        = request.form['favorito']
         
-        #Script para recibir el archivo (foto)
+        #Script con el que se recibe la vacante
         if(request.files['foto']):
             file     = request.files['foto']
             fotoForm = recibeFoto(file)
@@ -105,7 +105,7 @@ def  formActualizarCarro(idCarro):
             return render_template('public/layout.html', miData = listaCarros(), msg='No se pudo actualizar', tipo=1)
 
 
-#Eliminar carro
+#Eliminar vacante
 @app.route('/borrar-carro', methods=['GET', 'POST'])
 def formViewBorrarCarro():
     if request.method == 'POST':
@@ -131,7 +131,6 @@ def eliminarCarro(idCarro='', nombreFoto=''):
     cur.execute('DELETE FROM carros WHERE id=%s', (idCarro,))
     conexion_MySQLdb.commit()
     resultado_eliminar = cur.rowcount #retorna 1 o 0
-    #print(resultado_eliminar)
     
     basepath = os.path.dirname (__file__) #C:\xampp\htdocs\localhost\Crud-con-FLASK-PYTHON-y-MySQL\app
     url_File = os.path.join (basepath, 'static/assets/fotos_carros', nombreFoto)
@@ -148,7 +147,7 @@ def recibeFoto(file):
     basepath = os.path.dirname (__file__) #La ruta donde se encuentra el archivo actual
     filename = secure_filename(file.filename) #Nombre original del archivo
 
-    #capturando extensión del archivo ejemplo: (.png, .jpg, .pdf ...etc)
+    #capturando extensión del archivo ejemplo: (.png, .jpg, .pdf ...etc) no se permite otro tipo de archivos
     extension           = os.path.splitext(filename)[1]
     nuevoNombreFile     = stringAleatorio() + extension
     #print(nuevoNombreFile)
@@ -161,7 +160,7 @@ def recibeFoto(file):
        
   
   
-#Redireccionando cuando la página no existe
+#Redireccionando cuando la página no existe 
 @app.errorhandler(404)
 def not_found(error):
     return redirect(url_for('inicio'))
